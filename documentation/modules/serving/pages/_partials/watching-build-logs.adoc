@@ -42,9 +42,9 @@ oc logs -n {tutorial-namespace} event-greeter-build-pod-2a271e -c build-step-doc
 
 [TIP]
 ====
-* You can use the following command to list names of all the init containers within a pod . 
+* You can use the following command to list names of all the init containers within a pod.
 
-(e.g.) the following command lists all the init container names of the pod `event-greeter-build-pod-2986f2`
+ (e.g.) the following command lists all the init container names of the pod `event-greeter-build-pod-2986f2`
 
 [tabs]
 =====
