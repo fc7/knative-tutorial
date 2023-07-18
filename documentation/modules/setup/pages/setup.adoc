@@ -29,41 +29,41 @@ endif::[]
 
 The following CLI tools are required for running the exercises in this tutorial. Please have them installed and configured before you get started with any of the tutorial chapters.
 
-TIP: You can also use https://podman-desktop.io/[Podman] instead of Docker. The advantage of Podman is that it is 100% Free Open Source and does not need to run with elevated privileges. Just use 'podman' instead of 'docker' throughout the tutorial's instructions, or `alias docker=podman`.
+NOTE: You can of course also use https://docker.com[Docker] instead of Podman. The advantage of Podman is that it is 100% Free Open Source and does not need to run with elevated privileges. We also highly recommend trying out https://podman-desktop.io[Podman Desktop]!
 
 [cols="4*^,4*.",options="header,+attributes"]
 |===
-|**Tool**|**macOS**|**Linux**|**windows**
+|**Tool**|**macOS**|**Linux**|**Windows**
 
 | Git
 | https://git-scm.com/download/mac[Download]
 | https://git-scm.com/download/win[Download]
 | https://git-scm.com/download/linux[Download]
 
-| `Docker`
-| https://docs.docker.com/docker-for-mac/install[Docker for Mac]
-| https://docs.docker.com/desktop/install/linux-install/[Docker for Linux]
-| https://docs.docker.com/docker-for-windows/install[Docker for Windows]
+| https://podman.io[Podman]
+| https://podman.io/docs/installation#macos[Podman on macOS]
+| https://podman.io/docs/installation#installing-on-linux[Podman on Linux]
+| https://github.com/containers/podman/blob/main/docs/tutorials/podman-for-windows.md[Podman on Windows]
 
 | `kubectl {kubernetes-version}`
 | https://storage.googleapis.com/kubernetes-release/release/{kubernetes-version}/bin/darwin/amd64/kubectl[Download]
 | https://storage.googleapis.com/kubernetes-release/release/{kubernetes-version}/bin/linux/amd64/kubectl[Download]
 | https://storage.googleapis.com/kubernetes-release/release/{kubernetes-version}/bin/windows/amd64/kubectl.exe[Download]
 
-| https://github.com/wercker/stern[stern]
+| https://github.com/stern/stern[stern]
 | `brew install stern`
-| https://github.com/stern/stern/releases/download/v1.22.0/stern_1.22.0_linux_amd64.tar.gz[Download]
-| https://github.com/stern/stern/releases/download/v1.22.0/stern_1.22.0_windows_amd64.tar.gz[Download]
+| https://github.com/stern/stern/releases/download/v1.25.0/stern_1.25.0_linux_amd64.tar.gz[Download]
+| https://github.com/stern/stern/releases/download/v1.25.0/stern_1.25.0_windows_amd64.tar.gz[Download]
 
-| https://github.com/mikefarah/yq[yq v2.4.1]
-| https://github.com/mikefarah/yq/releases/download/v4.31.2/yq_darwin_amd64[Download]
-| https://github.com/mikefarah/yq/releases/download/v4.31.2/yq_linux_amd64[Download]
-| https://github.com/mikefarah/yq/releases/download/v4.31.2/yq_windows_amd64.exe[Download]
+| https://github.com/mikefarah/yq[yq]
+| `brew install yq`
+| https://github.com/mikefarah/yq/releases/download/v4.34.2/yq_linux_amd64[Download]
+| https://github.com/mikefarah/yq/releases/download/v4.34.2/yq_windows_amd64.exe[Download]
 
 | https://httpie.org/[httpie]
 | `brew install httpie`
 | https://httpie.io/docs/cli/linux[httpie for Linux]
-| https://httpie.org/doc#windows-etc
+| https://httpie.org/doc#windows-etc[httpie for Windows]
 
 | https://github.com/rakyll/hey[hey]
 | `brew install hey`
@@ -72,12 +72,12 @@ TIP: You can also use https://podman-desktop.io/[Podman] instead of Docker. The 
 
 | watch
 | `brew install watch`
-| `dnf/apt-get/.. install procps-ng`
+| `dnf/apt-get install procps-ng`
 |
 
 | kubectx and kubens
 | `brew install kubectx`
-| https://github.com/ahmetb/kubectx
-|
+| https://github.com/ahmetb/kubectx#installation[Installation]
+| https://github.com/ahmetb/kubectx#installation[Installation]
 
 |===

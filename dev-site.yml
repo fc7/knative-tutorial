@@ -17,7 +17,7 @@ asciidoc:
     branch: master
     workshop-domain: guru.devx.red
     minikube-version:  v1.28.0
-    openshift-version: v4.8
+    openshift-version: v4.12
     kubernetes-version: v1.23.0
     knative-version: v1.8.1
     knative-serving-version: v1.8.3
@@ -27,7 +27,7 @@ asciidoc:
     kn-client-version: v1.8.1
     camel-source-version: v0.24.0
     kafka-source-version: v1.8.1
-    kamel-version: 1.11.0
+    kamel-version: 1.12.1
     kubernetes-cli: kubectl
     release-version: master
     page-pagination: true
