@@ -44,6 +44,7 @@ bin/kubectl
 gh-pages
 staging-gh-pages
 
+package-lock.json
 yarn.lock
 
 .DS_Store
