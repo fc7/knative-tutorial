@@ -24,6 +24,11 @@ You can use the Camel K integration as part of the Knative Eventing architecture
 Simply speaking, you can make the Camel K integration act as a https://knative.dev/docs/eventing/sources/[Knative Event Source] and send the Camel exchanges (OUT) through a Knative Event Sink.
 To start working with Kamelets you will need to add the kamelet source plugin to `kn` CLI.
 
+[tabs]
+====
+Manual::
++
+--
 As you probably already installed the `kn` CLI tooling, you can simply load the https://github.com/knative-sandbox/kn-plugin-source-kamelet/releases[Kamelet source plugin binaries] in order to add the commands for managing Kamelets as event sources.
 
 Once you have the binary available on your machine you can hook this into your local kn tooling quite easily. The kn-client project provides a clever plugin architecture for adding commands. The respective plugin configuration is located in your home directory under `~/.config/kn/plugins`.
@@ -45,6 +50,17 @@ Add executable permission to the `kn-source-kamelet` binary
 ----
 chmod +x ~/.config/kn/plugins/kn-source-kamelet
 ----
+
+--
+Homebrew::
++
+--
+To install the plugin with Homebrew (e.g. on macOS), just run this command:
+----
+brew install knative-sandbox/kn-plugins/source-kamelet
+----
+--
+====
 
 You can then verify the plugin setup by displaying the kn help page once more:
 
