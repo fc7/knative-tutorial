@@ -43,14 +43,6 @@ Just make sure:
 
 If you have deleted the *default* broker, then you need to create the *default* broker to be used by this chapter's exercises.
 
-Navigate to the eventing chapter folder {eventing-repo}:
-
-[.console-input]
-[source,bash,subs="+macros,+attributes"]
-----
-cd $TUTORIAL_HOME/{eventing-repo}
-----
-
 .link:{github-repo}/{eventing-repo}/default-broker.yaml[default-broker]
 [source,yaml,subs="attributes+,+macros"]
 ----
