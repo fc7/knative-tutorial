@@ -3,7 +3,7 @@
 include::_attributes.adoc[]
 :hardbreaks-option:
 
-Knative Serving and Eventing install needs OpenShift4, you need to have one provisioned using https://try.openshift.com[try.openshift.com] or can use any existing OpenShift4 cluster.
+Knative Serving and Eventing install needs OpenShift 4.x, you need to have one provisioned using https://try.openshift.com[try.openshift.com] or can use any existing OpenShift 4.x cluster.
 
 Once you have your cluster, you can download the latest OpenShift client(oc) from https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/[here] and add to your path.
 
@@ -19,8 +19,8 @@ The output should show oc version >= {openshift-version}
 [.console-output]
 [source,bash,subs="+macros,+attributes"]
 ----
-Client Version: 4.6.9
-Kubernetes Version: {kubernetes-version}
+Client Version: 4.12.0
+Kubernetes Version: v1.25.10
 ----
 
 &nbsp;
