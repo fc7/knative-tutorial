@@ -1,0 +1,213 @@
+= CI/CD
+
+In this section we will see how the build and deployment of a Knative Function can be
+integrated in a CI/CD pipeline.
+
+[#on-cluster-builds]
+== Remote Builds
+
+Knative Function also supports building functions remotely on your cluster.
+There are a few requirements for that.
+
+[tabs]
+====
+Kubernetes::
++
+--
+Install https://github.com/tektoncd/pipeline/blob/main/docs/install.md[Tekton Pipelines] on your Kubernetes cluster
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kubectl apply -f https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.49.0/release.yaml
+----
+
+Then add permission to the `default` Service Account:
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+export NAMESPACE=knativetutorial
+kubectl create clusterrolebinding $NAMESPACE:knative-serving-namespaced-admin \
+--clusterrole=knative-serving-namespaced-admin  --serviceaccount=$NAMESPACE:default
+----
+
+See https://github.com/knative/func/blob/main/docs/building-functions/on_cluster_build.md[Building Functions on Cluster with Tekton Pipelines] for more details.
+
+--
+OpenShift::
++
+--
+1. https://docs.openshift.com/container-platform/4.12/cicd/pipelines/installing-pipelines.html[Install the Pipelines Operator]
+2. https://docs.openshift.com/container-platform/4.12/serverless/functions/serverless-functions-on-cluster-builds.html[Create Tekton tasks in each namespace]
+// oc apply -f https://raw.githubusercontent.com/openshift-knative/kn-plugin-func/serverless-1.29.0/pkg/pipelines/resources/tekton/task/func-s2i/0.1/func-s2i.yaml
+// oc apply -f https://raw.githubusercontent.com/openshift-knative/kn-plugin-func/serverless-1.29.0/pkg/pipelines/resources/tekton/task/func-deploy/0.1/func-deploy.yaml
+
+// NB: If your function is using buildpack instead of s2i, the `func-buildpack` task might need to be installed as well:
+// ----
+// oc apply -f https://raw.githubusercontent.com/openshift-knative/kn-plugin-func/serverless-1.28.0/pipelines/resources/tekton/task/func-buildpacks/0.1/func-buildpacks.yaml
+// ----
+// The `git-clone` task is also recommended:
+// ----
+// oc apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.9/git-clone.yaml
+// ----
+--
+====
+
+To run the build remotely, simply use 
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+func deploy --remote
+----
+
+This approach will simply upload the code of your function to the cluster before initiating the PipelineRun.
+
+On the other hand, if you are using a Git repo, you might prefer to have your build based on a checkout instead. For that you need to specify the git url of your function repo, either as a command-line parameter:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+func deploy --remote --git-url https://github.com/my-repo/my-function.git
+----
+
+Or can avoid that by providing the git url in your `func.yaml` instead:
+
+[source,yaml]
+----
+build: git
+git:
+  url: https://github.com/my-repo/my-function.git
+  revision: main                            # optional
+----
+
+[#pipeline-as-code]
+== Pipeline as Code
+
+The above procedure is good for developing and testing, but for production you might want 
+to automate this by means of a more robust CI/CD pipeline that follows the 
+https://pipelinesascode.com/[“Pipeline as Code”] (PAC) philosophy.
+
+If you are fine with `s2i` or `buildpack`, you can keep using these tasks in your 
+pipeline, but if you are keen on having full control on your supply chain and 
+the image build process, you might prefer to provide a custom `Dockerfile` to
+build your function image.
+
+It is also important to mention that your Git repo contains a folder `.tekton`, 
+the remote on-cluster build will use that instead of generating it at runtime for you.
+This will likewise allow more control.
+
+The PAC approach likewise assumes that your repo contains a folder `.tekton` with
+a file `pipelinerun.yaml`. Please refer to the https://pipelinesascode.com/[Pipeline as Code Tutorial] 
+or the latest https://docs.openshift.com/container-platform/4.13/cicd/pipelines/using-pipelines-as-code.html[OpenShift documentation] for details on how to set this up and use the `tkn pac` CLI.
+The best experience is with the Github App integration.
+
+Here I provide a template for a `PipelineRun` definition that can be used for 
+PAC with a custom `Dockerfile` for building the image, instead of relying on `s2i` or `buildpack`. 
+Make sure to adjust the values of `IMAGE_NAME` and `IMAGE_NAME` as needed:
+
+[source,yaml]
+----
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: my-function
+  annotations:
+    # The event we are targeting as seen from the webhook payload
+    # this can be an array too, i.e: [pull_request, push]
+    pipelinesascode.tekton.dev/on-event: "[pull_request, push]"
+
+    # The branch or tag we are targeting (ie: main, refs/tags/*)
+    pipelinesascode.tekton.dev/on-target-branch: "[master]"
+
+    # Fetch the git-clone task from hub, we are able to reference later on it
+    # with taskRef and it will automatically be embedded into our pipeline.
+    pipelinesascode.tekton.dev/task: "git-clone"
+
+    pipelinesascode.tekton.dev/task-1: "buildah"
+
+    pipelinesascode.tekton.dev/task-2: "kn"
+
+    # How many runs we want to keep.
+    pipelinesascode.tekton.dev/max-keep-runs: "5"
+spec:
+  params:
+    # The variable with brackets are special to Pipelines as Code
+    # They will automatically be expanded with the events from Github.
+    - name: repo_url
+      value: "{{ repo_url }}"
+    - name: revision
+      value: "{{ revision }}"
+    - name: APP_NAME
+      value: my-function  
+    - name: IMAGE_NAME
+      value: image-registry.openshift-image-registry.svc:5000/default/my-function
+    - name: DOCKERFILE_PATH
+      value: ./Dockerfile
+  pipelineSpec:
+    params:
+      - name: repo_url
+      - name: revision
+    workspaces:
+      - name: source
+      - name: basic-auth
+    tasks:
+      - name: fetch-repository
+        taskRef:
+          name: git-clone
+          kind: ClusterTask
+        workspaces:
+          - name: output
+            workspace: source
+          - name: basic-auth
+            workspace: basic-auth
+        params:
+          - name: url
+            value: $(params.repo_url)
+          - name: revision
+            value: $(params.revision)
+      - name: build-image
+        runAfter:
+          - fetch-repository
+        taskRef:
+          name: buildah
+          kind: ClusterTask
+        params:
+          - name: DOCKERFILE
+            value: $(params.DOCKERFILE_PATH)
+          - name: IMAGE
+            value: $(params.IMAGE_NAME)
+          - name: TLSVERIFY
+            value: 'false'
+        workspaces:
+          - name: source
+            workspace: source
+      - name: kn-service-apply
+        params:
+        - name: ARGS
+          value:
+            - service
+            - apply
+            - $(params.APP_NAME)
+            - '--image=$(params.IMAGE_NAME)@$(tasks.build-image.results.IMAGE_DIGEST)'
+        runAfter:
+            - build-image
+        taskRef:
+          kind: ClusterTask
+          name: kn
+  workspaces:
+  - name: source
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  # This workspace will inject secret to help the git-clone task to be able to
+  # checkout the private repositories
+  - name: basic-auth
+    secret:
+      secretName: "{{ git_auth_secret }}"
+----

@@ -34,7 +34,12 @@ a|
 *** xref:eventing:eventing-src-to-sink.adoc[Source to Sink]
 *** xref:eventing:channel-and-subscribers.adoc[Channel and Subscribers]
 *** xref:eventing:eventing-trigger-broker.adoc[Brokers and Triggers]
-|
+a|
+[.tile]
+.xref:functions:index.adoc[Knative Functions]
+* Setup
+* Develop and Deploy
+* Remote builds
 ifndef::workshop[]
 a|
 [.tile]

@@ -1,0 +1,3 @@
+* xref:functions:create-and-run.adoc#function-nodejs[Create a Node.js Function]
+* xref:functions:create-and-run.adoc#function-python[Create a Python Function]
+* xref:functions:ci-cd.adoc#incluster-builds[CI/CD]

@@ -1,0 +1,300 @@
+= Functions
+
+[#function-nodejs]
+== Create a Node.js function
+
+Let's create our first function with Node.js, using HTTP invokation:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kn func create -l node -t http node-hello
+----
+
+This will create a folder `node-hello` in which you'll find the following content:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+$ ls -1R
+README.md
+func.yaml
+index.js
+package-lock.json
+package.json
+test
+
+./test:
+integration.js
+unit.js
+----
+
+//TODO Error: registry required to build function, please set with `--registry` or the FUNC_REGISTRY environment variable
+
+As you can guess, this boilerplate already provides a runnable "hello world" function.
+You can build and run it with the following command; make sure to provide a valid registry, 
+as this will be important later when you deploy the function:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kn func build --builder=s2i --registry=quay.io/your_user
+----
+
+//TODO Error: failed to build the function: executing lifecycle: failed to create 'creator' container: Error response from daemon: container create: statfs /var/run/docker.sock: permission denied
+
+In a separate terminal, invoke your function with:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kn func invoke
+----
+
+By default, `invoke` will send the data `{"message":"Hello World"}`, and the minimal implementation in the boilerplate simply returns the exact same payload as a response. You should get this response:
+
+----
+Received response
+{"message":"Hello World"}
+----
+
+If you now run:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kn func invoke --data '{"message":"I ❤️ Knative Functions ⚡️"}'
+----
+
+the response will be
+
+----
+Received response
+{"message":"I ❤️ Knative Functions ⚡️"}
+----
+
+Let's now modify the code to do something slightly more interesting. We will use the NPM package https://www.npmjs.com/package/qrcode[qrcode] to generate a QRcode from an input string. In the root of your project, enter
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+npm install --save qrcode
+----
+
+Then open the file index.js in an editor (e.g. VS Code) and modify it as follows. 
+Add this line at the top of the file:
+
+[source,js]
+----
+const QRCode = require('qrcode');
+----
+
+and modify the `handle` function so that it returns a QRCode represented as a string of UTF-8 characters,
+taking the value of the parameter `content` from the request (either from the query string or from a JSON body):
+
+[source,js]
+----
+  if (context.method === 'POST') {
+    return QRCode.toString(body.content, {type: "utf8"})
+  } else if (context.method === 'GET') {
+    // If the request is an HTTP GET, the context will include a query string, if it exists
+    return QRCode.toString(context.query.content, {type: "utf8"})
+  } 
+----
+
+Let us now rebuild and run the function
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kn func run
+----
+
+and in a separate terminal, we invoke it as follows:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kn func invoke --data '{"content":"https://redhat-developer-demos.github.io/knative-tutorial/knative-tutorial/index.html"}'
+----
+
+the response in your terminal should look like this:
+
+image::qrcode-term.png[QRCode Response,align="center"]
+
+You can try to scan it with your smartphone to verify that it will bring you to that URL.
+Let's now rename our function by changing the property `name` in the file `func.yaml` to 
+`node-qr`.
+
+=== Deploy the function
+
+Until now we have only executed and invoked our function locally. Before 
+deploying it to our cluster, let's make a small modification to our code 
+so that the output is an SVG graphics instead of old-style console boxes.
+Just replace the two instances with `{type: "utf8"}` by `{type: "svg"}`.
+Now make sure your are still in the `knativetutorial` namespace 
+and that the image registry you are using is public, then run:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kn func deploy
+----
+
+This will rebuild the function image, push in to your registry, and then deploy 
+the Knative Function as a service. You should see an output like this:
+
+----
+   🙌 Function image built: quay.io/your_user/node-qr:latest
+   ✅ Function updated in namespace "knative-tutorial" and exposed at URL: 
+🕐 https://node-qr-knativetutorial.apps.your-cluster.your-domain.xyz
+----
+
+You can then invoke the remote function remotely with 
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+func invoke -t remote --data '{"content":"this-is-some-dummy-content"}'
+----
+
+or just with curl, which allows us to save the svg output to a file:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+curl https://node-qr-knative-tutorial.apps.your-cluster.your-domain.xyz/?content=this-is-some-dummy-content -o qrcode.svg
+----
+
+Then open the file `qrcode.svg` with your browser to validate that the output is correct.
+
+[#function-python]
+== Create a Python Function
+
+We will now create another function, this time in Python, and using the CloudEvents format.
+Our function will use a simple astronomical library, https://pypi.org/project/suncalc/[suncalc], 
+to compute the times of sunrise and sunset for a given location.
+Our function should consume a CloudEvent that provides the latitude and longitude, and
+produce another CloudEvent with the result of the computation.
+
+To create our function, which we call sunpy, we run
+
+----
+kn func create -l python -t cloudevent sunpy
+----
+
+We first add the dependency to `requirements.txt` 
+
+----
+parliament-functions==0.1.0
+suncalc==0.1.3
+----
+
+and then install it with `pip install -r requirements.txt`.
+Next, replace the code of `func.py` by this:
+
+[source,python]
+----
+from parliament import Context, event
+from suncalc import get_times
+from datetime import datetime
+import json
+
+@event
+def main(context: Context):
+    """
+    Function template
+    The context parameter contains the Flask request object and any
+    CloudEvent received with the request.
+    """
+    # Add your business logic here
+    indata = context.cloud_event.data
+    if isinstance(indata, str):
+        indata = json.loads(indata)
+
+    long = indata.get('long')
+    lat = indata.get('lat')
+
+    if 'datetimeiso' in indata:
+        dt = datetime.fromisoformat(indata.get('datetimeiso'))
+    else:
+        dt = datetime.now()
+    data = get_times(dt, long, lat)
+
+    # The return value here will be applied as the data attribute
+    # of a CloudEvent returned to the function invoker
+    return data
+----
+
+By default the computation is done for the current date and time. 
+Optionally, you can provide the attribute `datetimeiso` in the
+CloudEvent data object to change it.
+
+Then build the function:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+func build --builder=s2i --registry=quay.io/your_repo
+----
+
+and then run it locally with `kn func run` and 
+in a different terminal invoke it by sending some data 
+(feel free to change the longitude and latitude to your own location):
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+func invoke --data='{"long":8.65,"lat":50.11}'
+----
+
+You should see an output similar to this:
+
+[.console-output]
+[source,bash,subs="+macros,+attributes"]
+----
+Received response
+Context Attributes,
+  specversion: 1.0
+  type: parliament.response
+  source: /parliament/function
+  id: 0a869952-5480-4bd2-8058-680f537b50e5
+  time: 2023-07-25T13:00:08.039061Z
+  datacontenttype: application/json
+Data,
+  {
+    "dawn": "Tue, 25 Jul 2023 03:04:51 GMT",
+    "dusk": "Tue, 25 Jul 2023 20:01:14 GMT",
+    "golden_hour": "Tue, 25 Jul 2023 18:32:24 GMT",
+    "golden_hour_end": "Tue, 25 Jul 2023 04:33:41 GMT",
+    "nadir": "Mon, 24 Jul 2023 23:33:03 GMT",
+    "nautical_dawn": "Tue, 25 Jul 2023 02:10:17 GMT",
+    "nautical_dusk": "Tue, 25 Jul 2023 20:55:48 GMT",
+    "night": "Tue, 25 Jul 2023 22:14:05 GMT",
+    "night_end": "Tue, 25 Jul 2023 00:52:00 GMT",
+    "solar_noon": "Tue, 25 Jul 2023 11:33:03 GMT",
+    "sunrise": "Tue, 25 Jul 2023 03:45:12 GMT",
+    "sunrise_end": "Tue, 25 Jul 2023 03:49:09 GMT",
+    "sunset": "Tue, 25 Jul 2023 19:20:53 GMT",
+    "sunset_start": "Tue, 25 Jul 2023 19:16:57 GMT"
+  }
+----
+
+Note how the CloudEvent object has been pretty-printed in the terminal.
+As mentioned in the suncalc documentation, the returned timestamps are in 
+https://en.wikipedia.org/wiki/Coordinated_Universal_Time[UTC] format. For more background about those terms, see the Wikipedia articles
+https://en.wikipedia.org/wiki/Sunrise[Sunrise], 
+https://en.wikipedia.org/wiki/Dawn[Dawn],
+https://en.wikipedia.org/wiki/Sunset[Sunset],
+https://en.wikipedia.org/wiki/Dusk[Dusk] and
+https://en.wikipedia.org/wiki/Golden_hour_(photography)[Golden hour].
+
+NB: You can also try to invoke it for a different day of the year to 
+see how the values differ:
+
+----
+func invoke --data='{"long":8.65,"lat":50.11,"datetimeiso":"2023-12-23T12:00:00"}'
+----
+
+The procedure for deploying the function to your cluster and 
+invoking it remotely is the same as for our previous function.

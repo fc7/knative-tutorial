@@ -1,0 +1,110 @@
+= Knative Functions
+
+Knative Functions provides a way for developers to quickly bootstrap and deploy Knative Serving or Eventing services without having in-depth knowledge of Knative or Kubernetes or having to care too much about the internal details of the container image creation and deployment.
+It provides a simple programming model by means of the Knative CLI func plugin, which can also be used standalone via the `func` CLI.
+
+[TIP]
+====
+In order to build and run functions locally, you need Docker or Podman. 
+Remote on-cluster builds with https://tekton.dev[Tekton] are also supported: more on this later!
+====
+
+[#install-kn-func-plugin]
+## Install the func plugin
+
+[tabs]
+====
+Manual::
++
+--
+In order to make the `func` command available, download the https://github.com/knative/func/releases[func binary], and move it to a directory in your `$PATH`, e.g. `/usr/local/bin`, and make sure it has executable permissions. To likewise make it available as a kn plugin, create a symlink from the binary to `~/.config/kn/plugins/kn-func`. On Linux you would do something like this:
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+mv /path/to/func-linux-amd64 /usr/local/bin/func
+chmod +x /usr/local/bin/func
+pushd ~/.config/kn/plugins/
+ln -s  /usr/local/bin/func kn-func
+popd
+----
+
+--
+Homebrew::
++
+--
+To install the plugin with Homebrew, just run this command:
+[.console-output]
+[source,bash]
+----
+brew install knative-sandbox/kn-plugins/func
+----
+
+You will then have both `kn func` and `func` in your PATH.
+====
+
+You can verify the installation by running
+
+[.console-input]
+[source,bash,subs="+macros,+attributes"]
+----
+kn func -h
+----
+
+[.console-output]
+[source,bash,subs="+quotes,+attributes,+macros"]
+----
+func is the command line interface for managing Knative Function resources
+
+        Create a new Node.js function in the current directory:
+        func create --language node myfunction
+
+        Deploy the function using Docker hub to host the image:
+        func deploy --registry docker.io/alice
+
+Learn more about Functions:  https://knative.dev/docs/functions/
+Learn more about Knative at: https://knative.dev
+
+Primary Commands:
+  create      Create a function
+  describe    Describe a function
+  deploy      Deploy a function
+  delete      Undeploy a function
+  list        List deployed functions
+
+Development Commands:
+  run         Run the function locally
+  invoke      Invoke a local or remote function
+  build       Build a function container
+
+System Commands:
+  config      Configure a function
+  languages   List available function language runtimes
+  templates   List available function source templates
+  repository  Manage installed template repositories
+  environment Display function execution environment information
+
+Other Commands:
+  completion  Output functions shell completion code
+  version     Function client version information
+
+Use "func <command> --help" for more information about a given command.
+----
+
+In the following examples we are going to use `kn func` for consistency, but you can also use `func` directly.
+
+If you have experience with other FaaS frameworks (OpenFaas, AWS Lambda, Azure Functions, etc.),
+you'll quickly realize that the user experience is very similar. Creating a new function will set up 
+a project boilerplate for you. Knative Functions provides opinionated templates for various languages that simplify the creation of your functions. 
+
+For each supported language, you can choose the invocation format for your function, namely HTTP (for Knative Serving) or CloudEvent (for Knative Eventing). Templates for both formats are available for the following languages:
+
+* https://github.com/knative/func/blob/main/docs/function-templates/quarkus.md[Quarkus]
+* https://github.com/knative/func/blob/main/docs/function-templates/nodejs.md[Node.js]
+* https://github.com/knative/func/blob/main/docs/function-templates/typescript.md[TypeScript] (likewise based on Node.js)
+* https://github.com/knative/func/blob/main/docs/function-templates/python.md[Python]
+* https://github.com/knative/func/blob/main/docs/function-templates/springboot.md[Spring Boot]
+* https://github.com/knative/func/blob/main/docs/function-templates/golang.md[Go]
+* https://github.com/knative/func/blob/main/docs/function-templates/rust.md[Rust]
+
+// NB: at the time of writing, OpenShift Serverless 1.29 officially supports Quarkus, Node, TypeScript and Python.
