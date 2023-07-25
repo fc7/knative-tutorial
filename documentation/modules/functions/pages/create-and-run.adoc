@@ -173,7 +173,8 @@ Then open the file `qrcode.svg` with your browser to validate that the output is
 
 We will now create another function, this time in Python, and using the CloudEvents format.
 Our function will use a simple astronomical library, https://pypi.org/project/suncalc/[suncalc], 
-to compute the times of sunrise and sunset for a given location.
+to compute the times of sunrise and sunset for a given location. 
+// (Note that professionals would have probably opted for https://rhodesmill.org/skyfield/almanac.html#risings-and-settings[this library] instead.)
 Our function should consume a CloudEvent that provides the latitude and longitude, and
 produce another CloudEvent with the result of the computation.
 

@@ -81,6 +81,12 @@ git:
   revision: main                            # optional
 ----
 
+// TODO have a look at the generated PipelineRun
+// oc get pipelinerun -o yaml
+// add it to a .tekton/pipelinerun.yaml
+// modify the registry
+// run `kn deploy --remote` again: the new pipeline will be used instead!
+
 [#pipeline-as-code]
 == Pipeline as Code
 
@@ -93,9 +99,10 @@ pipeline, but if you are keen on having full control on your supply chain and
 the image build process, you might prefer to provide a custom `Dockerfile` to
 build your function image.
 
-It is also important to mention that your Git repo contains a folder `.tekton`, 
-the remote on-cluster build will use that instead of generating it at runtime for you.
-This will likewise allow more control.
+// TODO move to previous section
+It is also important to mention that whenever your Git repo contains a folder `.tekton`, 
+the remote on-cluster build will use that instead of generating the pipeline at runtime for you.
+This will likewise allow for more control.
 
 The PAC approach likewise assumes that your repo contains a folder `.tekton` with
 a file `pipelinerun.yaml`. Please refer to the https://pipelinesascode.com/[Pipeline as Code Tutorial] 
