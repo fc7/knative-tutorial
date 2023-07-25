@@ -53,9 +53,10 @@ OpenShift::
 +
 --
 
-Camel K is installed using its https://operatorhub.io/operator/camel-k[operator].Use the Operator Hub in OpenShift webconsole to install the Camel K operator.
+Camel K is installed using its https://operatorhub.io/operator/camel-k[operator].
 
-Once the operator is deployed successfully, run the following command to setup `Camel K` in the namespace:
+
+Run the following command to install the operator and setup `Camel K` in the namespace:
 
 [source,bash,subs="+quotes,+attributes,+macros"]
 ----
