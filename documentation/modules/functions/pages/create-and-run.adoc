@@ -146,7 +146,7 @@ the Knative Function as a service. You should see an output like this:
 
 ----
    🙌 Function image built: quay.io/your_user/node-qr:latest
-   ✅ Function updated in namespace "knative-tutorial" and exposed at URL: 
+   ✅ Function updated in namespace "knativetutorial" and exposed at URL: 
 🕐 https://node-qr-knativetutorial.apps.your-cluster.your-domain.xyz
 ----
 
@@ -163,7 +163,7 @@ or just with curl, which allows us to save the svg output to a file:
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-curl https://node-qr-knative-tutorial.apps.your-cluster.your-domain.xyz/?content=this-is-some-dummy-content -o qrcode.svg
+curl https://node-qr-knativetutorial.apps.your-cluster.your-domain.xyz/?content=this-is-some-dummy-content -o qrcode.svg
 ----
 
 Then open the file `qrcode.svg` with your browser to validate that the output is correct.
