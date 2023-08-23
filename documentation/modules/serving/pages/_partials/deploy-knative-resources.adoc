@@ -10,6 +10,8 @@ kn::
 [source,bash,subs="+macros,+attributes"]
 ----
 kn service create greeter \
+  --probe-liveness http::8080:/healthz \
+  --probe-readiness http::8080:/healthz \
   --image={greeter-image}
 ----
 #end::basic[]
