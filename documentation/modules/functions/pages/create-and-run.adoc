@@ -181,7 +181,7 @@ produce another CloudEvent with the result of the computation.
 To create our function, which we call sunpy, we run
 
 ----
-kn func create -l python -t cloudevent sunpy
+kn func create -l python -t cloudevents sunpy
 ----
 
 We first add the dependency to `requirements.txt` 

@@ -71,7 +71,7 @@ On the other hand, if you are using a Git repo, you might prefer to have your bu
 func deploy --remote --git-url https://github.com/my-repo/my-function.git
 ----
 
-Or can avoid that by providing the git url in your `func.yaml` instead:
+You can avoid that by providing the git url in your `func.yaml` instead:
 
 [source,yaml]
 ----
