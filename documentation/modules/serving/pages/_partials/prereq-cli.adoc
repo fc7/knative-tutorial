@@ -50,11 +50,13 @@ The output should be like
 [source,bash,subs="+macros,+attributes"]
 [.console-output]
 ----
-Client Version: 4.6.9
-Kubernetes Version: {kubernetes-version}
+Client Version: 4.12.0-202305301015.p0.g97c75d0.assembly.stream-97c75d0
+Kustomize Version: v4.5.7
+Server Version: 4.12.28
+Kubernetes Version: v1.25.10+3fe2906
 ----
 
-* Make sure to be on `knativetutorial` OpenShift project
+* Make sure to be on `{tutorial-namespace}` OpenShift project
 
 [#right-openshift-project]
 [.console-input]
