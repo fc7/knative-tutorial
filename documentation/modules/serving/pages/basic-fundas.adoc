@@ -67,19 +67,10 @@ video::h9F6ynUQHaU[youtube,width=640,height=480]
 [#basics-invoke-service]
 == Invoke Service
 ifndef::workshop[]
-[tabs]
-====
-Minikube::
-+
+
 --
 include::serving:partial$invoke-service.adoc[tags=**;!workshop-call;!workshop-call-params]
 --
-OpenShift::
-+
---
-include::serving:partial$invoke-service.adoc[tag=workshop-call]
---
-====
 endif::[]
 
 ifdef::workshop[]
