@@ -27,7 +27,7 @@ Navigate to the tutorial chapter's folder {basics-repo}:
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-cd $TUTORIAL_HOME/{basics-repo}
+cd $TUTORIAL_HOME
 ----
 
 The following snippet shows what a Knative service YAML looks like:
@@ -128,7 +128,7 @@ greeter-00001   greeter   100%             1            9m37s   3 OK / 4     Tru
 
 [TIP]
 ====
-* add `-oyaml` to the commands above to see more details
+* add `-o yaml` to the commands above to see more details
 ====
 
 [#basics-cleanup]
