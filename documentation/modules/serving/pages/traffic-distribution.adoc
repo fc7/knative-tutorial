@@ -33,15 +33,6 @@ As you learnt from previous chapter, Knative always routes traffic to the **late
 
 To explore the goals of this chapter, we will be using a colors service called *blue-green-canary*.
 
-// REMOVE THIS ONCE THE IMAGE IS FIXED
-[IMPORTANT,subs="attributes+,+macros"]
-====
-
-The image `quay.io/rhdevelopers/blue-green-canary` will probably not work on a recent version of OpenShift.
-Please use `quay.io/rh_ee_fcharett/blue-green-canary` instead. 
-It was created with https://github.com/fc7/knative-tutorial/blob/master/apps/blue-green-canary/Dockerfile[this Dockerfile].
-====
-
 .link:{github-repo}/{basics-repo}/{revision-file-v1}[{revision-v1}]
 [source,yaml,subs="attributes+,+macros"]
 ----
