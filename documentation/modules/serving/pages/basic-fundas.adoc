@@ -14,7 +14,7 @@ ifndef::workshop[]
 [#basics-prerequisite]
 == Prerequisite
 
-include::serving:partial$prereq-cli.adoc[]
+include::knative-tutorial:ROOT:partial$prereq-cli.adoc[]
 
 endif::[]
 

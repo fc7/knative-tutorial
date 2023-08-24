@@ -8,58 +8,70 @@ Minikube::
 --
 * Set your local docker to use minikube docker daemon
 
+[#minikube-set-env]
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 eval $(minikube docker-env)
 ----
 
-* Kubernetes should be `{kubernetes-version}`
+* Kubernetes should be {kubernetes-version}+
 
 [#kubectl-version]
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl version
+{kubernetes-cli} version
 ----
-copyToClipboard::kubectl-version[]
+
+The output should be as shown 
+
+[source,bash,subs="attributes+"]
+[.console-output]
+----
+Client Version: {kubernetes-version}
+Server Version: {kubernetes-version}
+----
 --
-Minishift::
+OpenShift::
 +
 --
-* Set your local docker to use minishift docker daemon 
-
-[#minishift-set-env]
-[source,bash,subs="+macros,+attributes"]
-----
-eval $(minishift docker-env)
-----
-copyToClipboard::minishift-set-env[]
-
-* OpenShift CLI should be v3.11.0+
+* OpenShift CLI should be {openshift-version}+
 
 [#oc-version]
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-eval $(minishift oc-env)
 oc version 
 ----
-copyToClipboard::oc-version[]
 
-* Make sure to be on `knativetutorial` OpenShift project
+The output should be like
+
+[source,bash,subs="+macros,+attributes"]
+[.console-output]
+----
+Client Version: 4.12.0-202305301015.p0.g97c75d0.assembly.stream-97c75d0
+Kustomize Version: v4.5.7
+Server Version: 4.12.28
+Kubernetes Version: v1.25.10+3fe2906
+----
+
+* Make sure to be on `{tutorial-namespace}` OpenShift project
 
 [#right-openshift-project]
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 oc project -q 
 ----
-copyToClipboard::right-openshift-project[]
 
 If you are not on `{tutorial-namespace}` project, then run following command to change to `{tutorial-namespace}` project:
 
 [#change-to-openshift-project]
+[.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
 oc project {tutorial-namespace}
 ----
-copyToClipboard::change-to-openshift-project[]
 --
 ====
