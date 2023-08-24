@@ -150,7 +150,7 @@ kn service delete greeter
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl delete services.serving.knative.dev greeter
+{kubernetes-cli} delete services.serving.knative.dev greeter
 ----
 --
 ====

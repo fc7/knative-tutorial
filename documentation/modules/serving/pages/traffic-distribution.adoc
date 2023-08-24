@@ -120,7 +120,7 @@ blue-green-canary-00001   blue-green-canary                    1            30m 
 [.console-input]
 [source,bash,subs="+macros,attributes+"]
 ----
-kubectl get rev \
+{kubernetes-cli} get rev \
   --selector=serving.knative.dev/service=blue-green-canary \
   --sort-by="{.metadata.creationTimestamp}"
 ----
