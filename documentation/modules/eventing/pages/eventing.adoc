@@ -14,7 +14,7 @@ At the end of this chapter you will know and understand:
 ifndef::workshop[]
 [#eventing-prerequisite]
 == Prerequisite 
-include::eventing:partial$prereq-cli.adoc[]
+include::knative-tutorial:ROOT:partial$prereq-cli.adoc[]
 endif::[]
 
 include::eventing:partial$eventing-snippets.adoc[tag=eventing-nav-folder]

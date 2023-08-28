@@ -10,6 +10,8 @@ kn::
 [source,bash,subs="+macros,+attributes"]
 ----
 kn service create greeter \
+  --probe-liveness http::8080:/healthz \
+  --probe-readiness http::8080:/healthz \
   --image={greeter-image}
 ----
 #end::basic[]
@@ -94,7 +96,7 @@ kn service create prime-generator \
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-{kubernetes-cli} apply -f link:{github-repo}/{basics-repo}/{service-file}[pass:[$TUTORIAL_HOME]/{basics-repo}/{service-file}]
+{kubernetes-cli} apply -f link:{github-repo}/{basics-repo}/{service-file}[{basics-repo}/{service-file}]
 ----
 --
 ====

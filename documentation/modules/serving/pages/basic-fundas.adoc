@@ -14,7 +14,7 @@ ifndef::workshop[]
 [#basics-prerequisite]
 == Prerequisite
 
-include::serving:partial$prereq-cli.adoc[]
+include::knative-tutorial:ROOT:partial$prereq-cli.adoc[]
 
 endif::[]
 
@@ -27,7 +27,7 @@ Navigate to the tutorial chapter's folder {basics-repo}:
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-cd $TUTORIAL_HOME/{basics-repo}
+cd $TUTORIAL_HOME
 ----
 
 The following snippet shows what a Knative service YAML looks like:
@@ -67,19 +67,10 @@ video::h9F6ynUQHaU[youtube,width=640,height=480]
 [#basics-invoke-service]
 == Invoke Service
 ifndef::workshop[]
-[tabs]
-====
-Minikube::
-+
+
 --
 include::serving:partial$invoke-service.adoc[tags=**;!workshop-call;!workshop-call-params]
 --
-OpenShift::
-+
---
-include::serving:partial$invoke-service.adoc[tag=workshop-call]
---
-====
 endif::[]
 
 ifdef::workshop[]
@@ -137,7 +128,7 @@ greeter-00001   greeter   100%             1            9m37s   3 OK / 4     Tru
 
 [TIP]
 ====
-* add `-oyaml` to the commands above to see more details
+* add `-o yaml` to the commands above to see more details
 ====
 
 [#basics-cleanup]
@@ -159,7 +150,7 @@ kn service delete greeter
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl delete services.serving.knative.dev greeter
+{kubernetes-cli} delete services.serving.knative.dev greeter
 ----
 --
 ====

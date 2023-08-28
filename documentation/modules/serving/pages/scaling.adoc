@@ -14,12 +14,12 @@ At the end of this chapter you will be able to:
 * Configure a minimum number of replicas for a service.
 
 
-Navigate to the tutorial chapter's `{basics-repo}` folder:
+Navigate to the tutorial folder:
 
 [source,bash,subs="attributes+,+macros"]
 [.console-input]
 ----
-cd $TUTORIAL_HOME/{basics-repo}
+cd $TUTORIAL_HOME
 ----
 
 [#scaling-deploy-service]

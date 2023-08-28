@@ -23,7 +23,7 @@ greeter   http://greeter.{tutorial-namespace}.{minikube-nip-io}   greeter-sxnzq-
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl get services.serving.knative.dev greeter 
+{kubernetes-cli} get ksvc greeter
 ----
 
 [.console-output]
@@ -42,7 +42,7 @@ greeter   greeter-00001   greeter-00001   True
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl get configurations.serving.knative.dev greeter
+{kubernetes-cli} get configuration.serving.knative.dev greeter
 ----
 #end::knative-configs[]
 
@@ -105,7 +105,7 @@ kn revision list
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl get rev \
+{kubernetes-cli} get rev \
 --selector=serving.knative.dev/service=greeter \
 --sort-by="{.metadata.creationTimestamp}"
 ----
@@ -118,7 +118,7 @@ kubectl get rev \
 [.console-input]
 [source,bash,subs="+macros,+attributes"]
 ----
-kubectl get rev \
+{kubernetes-cli} get rev \
   -l serving.knative.dev/configuration=greeter \
   --sort-by="{.metadata.creationTimestamp}"
 ----

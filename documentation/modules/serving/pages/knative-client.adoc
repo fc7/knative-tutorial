@@ -12,12 +12,6 @@ At the end of this chapter you will be able to :
 * Create, update, list and delete Knative service revisions
 * List Knative service routes
 
-[WARNING]
-====
-* Knative Client (`kn`) is still under aggressive development, so commands and options might change rapidly. 
-* As of writing the tutorial {kn-client-version} was the latest version of the Knative Client
-====
-
 [#kn-install]
 == Install
 
@@ -38,14 +32,14 @@ The above command will return a response like
 [.console-output]
 ----
 Version:      {kn-client-version}
-Build Date:   2021-12-14T12:31:50Z
-Git Revision: 530841f1
+Build Date:   2023-07-27T06:51:41Z
+Git Revision: b7508e67
 Supported APIs:
 * Serving
-  - serving.knative.dev/v1 (knative-serving )
+  - serving.knative.dev/v1 (knative-serving {kn-client-version})
 * Eventing
-  - sources.knative.dev/v1 (knative-eventing )
-  - eventing.knative.dev/v1 (knative-eventing )
+  - sources.knative.dev/v1 (knative-eventing {kn-client-version})
+  - eventing.knative.dev/v1 (knative-eventing {kn-client-version})
 ----
 
 [#kn-ksvc]
@@ -70,17 +64,18 @@ A successful create of the `greeter` service should show a response like
 ----
 Creating service 'greeter' in namespace 'knativetutorial':
 
-  0.028s The Configuration is still working to reflect the latest desired specification.
-  0.097s The Route is still working to reflect the latest desired specification.
-  0.120s Configuration "greeter" is waiting for a Revision to become ready.
- 12.075s ...
- 12.128s Ingress has not yet been reconciled.
- 12.223s unsuccessfully observed a new generation
- 12.378s Ready to serve.
+  0.033s The Route is still working to reflect the latest desired specification.
+  0.067s ...
+  0.104s Configuration "greeter" is waiting for a Revision to become ready.
+ 13.195s ...
+ 13.210s Ingress has not yet been reconciled.
+ 13.299s Waiting for load balancer to be ready
+ 13.483s Ready to serve.
 
-Service 'greeter' created to latest revision 'greeter-zyjrq-1' is available at URL:
+Service 'greeter' created to latest revision 'greeter-00001' is available at URL:
 http://greeter.{tutorial-namespace}.{minikube-nip-io}
 ----
+NB: on OpenShift the URL will be similar to: https://greeter-knativetutorial.apps.example.com
 
 [#kn-list-services]
 === List Knative Services
@@ -102,19 +97,9 @@ greeter   #http://greeter.knativetutorial.192.168.64.13.nip.io#  greeter-sxnzq-1
 
 === Invoke Service
 ifndef::workshop[]
-[tabs]
-====
-Minikube::
-+
 --
 include::serving:partial$invoke-service.adoc[tags=**;!workshop-call;!workshop-call-params]
 --
-OpenShift::
-+
---
-include::serving:partial$invoke-service.adoc[tag=workshop-call]
---
-====
 endif::[]
 
 [IMPORTANT]
@@ -140,15 +125,14 @@ kn service update greeter --env "MESSAGE_PREFIX=Namaste"
 [.console-output]
 [source,bash,subs="+macros,attributes+"]
 ----
-Updating Service 'greeter' in namespace '{tutorial-namespace}':
+Updating Service 'greeter' in namespace 'knativetutorial':
 
-  0.025s The Configuration is still working to reflect the latest desired specification.
-  5.694s Traffic is not yet migrated to the latest revision.
-  5.736s Ingress has not yet been reconciled.
-  5.783s unsuccessfully observed a new generation
-  5.971s Ready to serve.
+  2.737s Traffic is not yet migrated to the latest revision.
+  2.762s Ingress has not yet been reconciled.
+  2.785s Waiting for load balancer to be ready
+  2.961s Ready to serve.
 
-Service 'greeter' updated to latest revision 'greeter-tmvxm-2' is available at URL:
+Service 'greeter' updated to latest revision 'greeter-00002' is available at URL:
 http://greeter.{tutorial-namespace}.{minikube-nip-io}
 ----
 
@@ -178,21 +162,22 @@ The describe should show you a short summary of your service :
 ----
 Name:       greeter
 Namespace:  knativetutorial
-Age:        1m
+Age:        13m
 URL:        http://greeter.{tutorial-namespace}.{minikube-nip-io}
 
 Revisions:  
-  100%  @latest (greeter-twpgf-1) [1] (1m)
-        Image:  quay.io/rhdevelopers/knative-tutorial-greeter:quarkus (pinned to 767e2f)
+  100%  @latest (greeter-00002) [2] (1m)
+        Image:     quay.io/rhdevelopers/knative-tutorial-greeter:quarkus (pinned to 767e2f)
+        Replicas:  0/0
 
 Conditions:  
   OK TYPE                   AGE REASON
-  ++ Ready                  34s 
-  ++ ConfigurationsReady    34s 
-  ++ RoutesReady            34s 
+  ++ Ready                   1m
+  ++ ConfigurationsReady     1m
+  ++ RoutesReady             1m
 ----
 
-==== Describe with verboisity
+==== Describe with verbosity
 
 To list all the revisions as part of the `describe` command use:
 
@@ -206,24 +191,26 @@ kn service describe greeter -v
 ----
 Name:         greeter
 Namespace:    knativetutorial
-Annotations:  serving.knative.dev/creator=minikube-user
-              serving.knative.dev/lastModifier=minikube-user
+Annotations:  serving.knative.dev/creator=admin
+              serving.knative.dev/lastModifier=admin
 Age:          14m
 URL:          http://greeter.{tutorial-namespace}.{minikube-nip-io}
-Cluster:      http://greeter.knativetutorial.svc.cluster.local
+Cluster:      http://greeter.{tutorial-namespace}.svc.cluster.local
 
 Revisions:
-  100%  @latest (greeter-tmvxm-2) [2] (10m)
-        Image:  quay.io/rhdevelopers/knative-tutorial-greeter:quarkus (pinned to 767e2f)
-        Env:    MESSAGE_PREFIX=Namaste
-     +  greeter-zyjrq-1 [1] (14m)
-        Image:  quay.io/rhdevelopers/knative-tutorial-greeter:quarkus (pinned to 767e2f)
+  100%  @latest (greeter-00002) [2] (3m)
+        Image:     quay.io/rhdevelopers/knative-tutorial-greeter:quarkus (pinned to 767e2f)
+        Replicas:  0/0
+        Env:       MESSAGE_PREFIX=Namaste
+     +  greeter-00001 [1] (15m)
+        Image:     quay.io/rhdevelopers/knative-tutorial-greeter:quarkus (pinned to 767e2f)
+        Replicas:  0/0
 
 Conditions:
   OK TYPE                   AGE REASON
-  ++ Ready                  10m
-  ++ ConfigurationsReady    10m
-  ++ RoutesReady            10m
+  ++ Ready                   3m
+  ++ ConfigurationsReady     3m
+  ++ RoutesReady             3m
 ----
 
 ==== Get Service URL
@@ -283,17 +270,17 @@ kn revision describe greeter-00001
 ----
 Name:       greeter-00001
 Namespace:  knativetutorial
-Age:        17m
+Age:        19m
 Image:      quay.io/rhdevelopers/knative-tutorial-greeter:quarkus (pinned to 767e2f)
 Replicas:   0/0
 Service:    greeter
 
-Conditions:  
+Conditions:
   OK TYPE                  AGE REASON
-  ++ Ready                 17m 
-  ++ ContainerHealthy      17m 
-  ++ ResourcesAvailable    17m 
-   I Active                16m NoTraffic
+  ++ Ready                 18m
+  ++ ContainerHealthy      18m
+  ++ ResourcesAvailable    18m
+   I Active                 6m NoTraffic
 ----
 
 [#kn-revisions-delete]
@@ -310,7 +297,7 @@ kn revision delete greeter-00001
 [.console-output]
 [source,bash]
 ----
-Revision 'greeter-00001' successfully deleted in namespace 'knativetutorial'.
+Revision 'greeter-00001' deleted in namespace 'knativetutorial'.
 ----
 
 [#kn-routes]
